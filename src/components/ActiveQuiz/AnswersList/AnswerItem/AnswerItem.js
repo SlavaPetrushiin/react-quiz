@@ -5,9 +5,7 @@ const AnswerItem = props => {
     const cls = [classes.AnswerItem];
     if(props.answerState){
         cls.push(classes[props.answerState])
-        console.log(cls)
     }
-
     return (
         <li
             className={cls.join(' ')}
