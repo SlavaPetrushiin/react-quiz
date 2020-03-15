@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import classes from './FinishedQuiz.module.css'
 import FinishedItem from "./FinishedItem/FinishedItem";
+import Button from "../ui/Button/Button";
 
 const FinishedQuiz = props => {
     const {quiz, results} = props;
-    const successAnswer = Object.keys(results).reduce((sum, answer) => {
-        if(answer === 'success'){
-            return sum++
+    const successAnswer = Object.keys(results).reduce((sum, answerId) => {
+        if(results[answerId] === 'success'){
+            sum++
         }
+        return sum;
     }, 0);
 
     return (
@@ -26,7 +28,12 @@ const FinishedQuiz = props => {
             </ul>
             <p>{`Правильно ${successAnswer} из ${quiz.length}`}</p>
             <div>
-                <button>Повторить</button>
+                <Button onClick={props.onRetry} type={'primary'}>
+                    Повторить
+                </Button>
+                <Button type={'success'}>
+                    Перейти в список тестов
+                </Button>
             </div>
         </div>
     );
