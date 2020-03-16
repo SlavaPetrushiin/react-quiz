@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import classes from './FinishedQuiz.module.css'
 import FinishedItem from "./FinishedItem/FinishedItem";
 import Button from "../ui/Button/Button";
+import {Link} from "react-router-dom";
 
 const FinishedQuiz = props => {
     const {quiz, results} = props;
     const successAnswer = Object.keys(results).reduce((sum, answerId) => {
-        if(results[answerId] === 'success'){
+        if (results[answerId] === 'success') {
             sum++
         }
         return sum;
@@ -31,9 +32,11 @@ const FinishedQuiz = props => {
                 <Button onClick={props.onRetry} type={'primary'}>
                     Повторить
                 </Button>
-                <Button type={'success'}>
-                    Перейти в список тестов
-                </Button>
+                <Link to={'/'}>
+                    <Button type={'success'} >
+                        Перейти в список тестов
+                    </Button>
+                </Link>
             </div>
         </div>
     );

@@ -5,7 +5,7 @@ import Drawer from "../../components/Navigation/Drawer/Drawer";
 
 class Layout extends Component {
     state={
-        menu: true
+        menu: false
     };
 
     toggleMenuHandler = () => {
@@ -23,14 +23,11 @@ class Layout extends Component {
     render() {
         return (
             <div className={classes.Layout}>
-
                 <Drawer isOpen={this.state.menu} onClouse={this.onClouseHandler}/>
-
                 <MenuToggle
                     onToggle={this.toggleMenuHandler}
                     isOpen={this.state.menu}
                 />
-
                 <main>
                     {this.props.children}
                 </main>
