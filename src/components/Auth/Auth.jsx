@@ -2,9 +2,11 @@ import React, {Component} from 'react';
 import Button from "../ui/Button/Button";
 import classes from './Auth.module.css'
 import Input from "../ui/Input/Input";
+import is from "is_js";
 
 class Auth extends Component {
     state = {
+        isFormValid: false,
         formControls:{
             email: {
                 value: '',
@@ -47,16 +49,48 @@ class Auth extends Component {
         e.preventDefault();
     };
 
+    validateControl(value, validation){
+        if(!validation){ //Валидация не нужна
+           return true;
+        }
 
-    onChangeHandler = (event, controlName) => {
-        const newInput = {
-            ...this.state.formControls[controlName],
-            value: event.target.value,
-            touched: true,
-        };
+        let isValid = true;
         debugger
 
-        console.log(`${controlName} ${event.target.value}`)
+        if(validation.required){
+            isValid = value.trim() !== '' && isValid;
+        }
+
+        if(validation.email){
+            isValid = is.email(value) && isValid;
+        }
+
+        if(validation.minLength){
+            isValid = value.length >= 6 && isValid;
+        }
+
+        return isValid;
+    };
+
+    onChangeHandler = (event, controlName) => {
+        const formControls = {...this.state.formControls};
+        const control = {...formControls[controlName]};
+        let isFormValid = true;
+
+        control.value = event.currentTarget.value;
+        control.touched = true;
+        control.valid = this.validateControl(control.value, control.validation); //проверка на валидацию
+
+        formControls[controlName] = control;
+
+        Object.keys(formControls).forEach(name => {
+            isFormValid = formControls[name].valid && isFormValid; //Проверка на валидацию всех полей!
+        });
+
+        this.setState({
+            formControls,
+            isFormValid
+        });
     };
 
     renderInputs() {
@@ -82,8 +116,20 @@ class Auth extends Component {
                     </h2>
                     <form onSubmit={this.submitForm} className={classes.AuthForm}>
                         {this.renderInputs()}
-                        <Button type={'success'} onClick={this.loginHandler}>Авторизация</Button>
-                        <Button type={'primary'} onClick={this.registerHandler}>Регистрация</Button>
+                        <Button
+                            type={'success'}
+                            onClick={this.loginHandler}
+                            disabled={!this.state.isFormValid}
+                        >
+                            Авторизация
+                        </Button>
+                        <Button
+                            type={'primary'}
+                            onClick={this.registerHandler}
+                            disabled={!this.state.isFormValid}
+                        >
+                            Регистрация
+                        </Button>
                     </form>
                 </div>
             </div>
