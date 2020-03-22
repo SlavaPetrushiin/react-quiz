@@ -55,7 +55,6 @@ class Auth extends Component {
         }
 
         let isValid = true;
-        debugger
 
         if(validation.required){
             isValid = value.trim() !== '' && isValid;

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import classes from './FinishedQuiz.module.css'
 import FinishedItem from "./FinishedItem/FinishedItem";
 import Button from "../ui/Button/Button";

@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import classes from './Quiz.module.css';
 import ActiveQuiz from "../../components/ActiveQuiz/ActiveQuiz";
 import FinishedQuiz from "../../components/FinishedQuiz/FinishedQuiz";
+import {withRouter} from "react-router";
+import axios from './../../axios/axios-quiz';
+import Loader from "../../components/Loadar/Loader";
 
 
 class Quiz extends Component {
@@ -10,31 +13,19 @@ class Quiz extends Component {
         isFinished: false,
         activeQuestion: 0,
         answerState: null, //{[id]: success error} цвет ответа
-        quiz: [
-            {
-                question: 'Столица России',
-                rightAnswerId: 1,
-                id: 1,
-                answers: [
-                    {text: 'Москва', id: '1'},
-                    {text: 'Ростов', id: '2'},
-                    {text: 'Вологда', id: '3'},
-                    {text: 'Анадырь', id: '4'}
-                ]
-            },
-            {
-                question: 'Столица Италии',
-                rightAnswerId: 2,
-                id: 2,
-                answers: [
-                    {text: 'Милан', id: '1'},
-                    {text: 'Рим', id: '2'},
-                    {text: 'Лацо', id: '3'},
-                    {text: 'Верона', id: '4'}
-                ]
-            },
-        ]
+        quiz: [],
+        loading: true
     };
+
+    async componentDidMount() {
+        try {
+            const response = await axios.get(`quizes/${this.props.match.params.id}.json`);
+            const quiz = response.data;
+            this.setState({quiz, loading: false})
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     onAnswerClickHandle = (answerId) => {
         if (this.state.answerState) {//двойной клик
@@ -87,25 +78,26 @@ class Quiz extends Component {
                     <h1>Ответье на все вопросы</h1>
 
                     {
-                        this.state.isFinished
-                            ? <FinishedQuiz
-                                results={this.state.results}
-                                quiz={this.state.quiz}
-                            />
-                            : <ActiveQuiz
-                                answers={this.state.quiz[this.state.activeQuestion].answers}
-                                question={this.state.quiz[this.state.activeQuestion].question}
-                                onAnswerClick={this.onAnswerClickHandle}
-                                quezLength={this.state.quiz.length}
-                                numberQuestion={this.state.activeQuestion + 1}
-                                answerState={this.state.answerState}
-                            />
+                        this.state.loading
+                            ? <Loader/>
+                            : this.state.isFinished
+                                ? <FinishedQuiz
+                                    results={this.state.results}
+                                    quiz={this.state.quiz}
+                                />
+                                : <ActiveQuiz
+                                    answers={this.state.quiz[this.state.activeQuestion].answers}
+                                    question={this.state.quiz[this.state.activeQuestion].question}
+                                    onAnswerClick={this.onAnswerClickHandle}
+                                    quezLength={this.state.quiz.length}
+                                    numberQuestion={this.state.activeQuestion + 1}
+                                    answerState={this.state.answerState}
+                                />
                     }
-
                 </div>
             </div>
         );
     }
 }
 
-export default Quiz;
+export default withRouter(Quiz);
