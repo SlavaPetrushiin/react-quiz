@@ -1,44 +1,33 @@
-import {LOADING_SUCCESS, QUIZES_SUCCESS} from "../actions/actionTypes";
-import axios from "../../axios/axios-quiz";
+import {
+    FETCH_QUIZES_ERROR,
+    FETCH_QUIZES_START,
+    FETCH_QUIZES_SUCCESS,
+} from "../actions/actionTypes";
 
 const initialState = {
     quizes: [],
-    loading: true
+    loading: false,
+    error: null
 };
 
-export const quiz = (state = initialState, action) => {
+export const quizReducer = (state = initialState, action) => {
     switch (action.type) {
-        case LOADING_SUCCESS:
+        case FETCH_QUIZES_START:
             return {
-                ...state, loading: false
+                ...state, loading: true
             };
-        case QUIZES_SUCCESS:
+        case FETCH_QUIZES_SUCCESS:
             return {
-                ...state, quizes: [...action.quizes]
+                ...state,
+                loading: false,
+                quizes: [...action.quizes]
             };
+        case FETCH_QUIZES_ERROR:
+            return {
+                ...state, error: action.error
+            }
         default :
             return state
     }
 };
 
-export const loadingSuccess = () => ({type: LOADING_SUCCESS,loading: true});
-export const getQuizesSuccess = (quizes) => ({type: QUIZES_SUCCESS, quizes});
-
-export const getQuizes = () => async (dispatch) => {
-    try {
-        const quizes = [];
-
-        const response = await axios.get('quizes.json');
-
-        Object.keys(response.data).forEach((key, index) => {
-            quizes.push({
-                id: key,
-                name: `Test №${index + 1}`
-            })
-        });
-        dispatch(getQuizesSuccess(quizes));
-        dispatch(loadingSuccess());
-    } catch (e) {
-
-    }
-};

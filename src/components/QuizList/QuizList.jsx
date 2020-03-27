@@ -1,22 +1,18 @@
 import React, {Component} from 'react';
 import classes from './QuizList.module.css';
 import {NavLink} from "react-router-dom";
-import axios from '../../axios/axios-quiz';
 import Loader from "../Loadar/Loader";
 import {connect} from "react-redux";
-import {getQuizes, loadingSuccess} from "../../store/reducers/quiz";
+import {fetchQuizes} from "../../store/actions/quiz";
 
 class QuizList extends Component {
-    async componentDidMount() {//запрос на получение списка тестов
-        this.props.getQuizes()
+    componentDidMount() {//запрос на получение списка тестов
+        this.props.fetchQuizes();
     }
 
     renderQuizes = () => {
-
         return this.props.quizes.map(quiz => {
-            debugger
             return (
-
                 <li
                     key={quiz.id}
                 >
@@ -34,7 +30,7 @@ class QuizList extends Component {
                 <div>
                     <h1>Список тестов</h1>
                     {
-                        this.props.loading
+                        this.props.loading && this.props.quizes.length === 0
                             ? <Loader/>
                             : <ul>
                                 {this.renderQuizes()}
@@ -54,4 +50,4 @@ const mapStateToProps = state => {
 };
 
 
-export default connect(mapStateToProps, {getQuizes})(QuizList);
+export default connect(mapStateToProps, {fetchQuizes})(QuizList);
