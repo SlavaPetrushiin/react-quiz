@@ -21,6 +21,7 @@ class Quiz extends Component {
         try {
             const response = await axios.get(`quizes/${this.props.match.params.id}.json`);
             const quiz = response.data;
+            debugger
             this.setState({quiz, loading: false})
         } catch (e) {
             console.log(e)

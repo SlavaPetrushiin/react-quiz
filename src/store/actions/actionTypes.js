@@ -1,0 +1,2 @@
+export const LOADING_SUCCESS = 'LOADING_SUCCESS';
+export const QUIZES_SUCCESS = 'QUIZES_SUCCESS';
