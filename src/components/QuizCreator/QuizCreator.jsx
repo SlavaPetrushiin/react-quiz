@@ -5,7 +5,8 @@ import {createControl} from './../../form/fromFramework';
 import Input from "../ui/Input/Input";
 import Select from "../ui/Select/Select";
 import {valid, validForm} from "../../form/fromFramework";
-import axios from 'axios';
+import {connect} from "react-redux";
+import {createQuizQuestion, finishCreateQuiz} from "../../store/actions/create";
 
 function createOptionControl(number) {
     return createControl({
@@ -35,7 +36,6 @@ function createFormControls() {
 
 class QuizCreator extends Component {
     state = {
-        quiz: [],
         isValidForm: false,
         rightAnswerId: 1,
         formControls: createFormControls()
@@ -47,14 +47,12 @@ class QuizCreator extends Component {
 
     addQuestionHandler = (event) => {
         event.preventDefault();
-        const quiz = [...this.state.quiz];
         const {question, option1, option2, option3, option4} = this.state.formControls;
-        const index = quiz.length + 1;
 
         let questionItem = {
             question: question.value,
             rightAnswerId: this.state.rightAnswerId,
-            id: index,
+            id: this.props.quiz.length + 1,
             answers: [
                 {text: option1.value, id: option1.id},
                 {text: option2.value, id: option2.id},
@@ -63,33 +61,24 @@ class QuizCreator extends Component {
             ]
         };
 
-        quiz.push(questionItem);
+        this.props.createQuizQuestion(questionItem);
 
         this.setState({
-            quiz,
             isValidForm: false, //Обнуление сорстояния
             rightAnswerId: 1,
             formControls: createFormControls()
         })
     };
 
-    createQuizHandler = async (event) => {
+    createQuizHandler = (event) => {
         event.preventDefault();
-        try {
-            await axios.post('https://react-quiz-9c3cb.firebaseio.com/quizes.json', this.state.quiz);
 
-            this.setState({
-                quiz: [],
-                isValidForm: false, //Обнуление сорстояния
-                rightAnswerId: 1,
-                formControls: createFormControls()
-            })
-        } catch (e) {
-            console.log(e)
-        }
-
-
-        console.log(this.state.quiz)
+        this.props.finishCreateQuiz(); //отправка данных на сервер
+        this.setState({
+            isValidForm: false, //Обнуление сорстояния
+            rightAnswerId: 1,
+            formControls: createFormControls()
+        })
     };
 
     //Изменения инпута
@@ -134,7 +123,6 @@ class QuizCreator extends Component {
     };
 
     render() {
-
         const select = <Select
             label={'Выберите правильный ответ'}
             value={this.state.rightAnswerId}
@@ -164,7 +152,7 @@ class QuizCreator extends Component {
                         <Button
                             type={'success'}
                             onClick={this.createQuizHandler}
-                            disabled={this.state.quiz.length === 0}
+                            disabled={this.props.quiz.length === 0}
                         >
                             Создать тест
                         </Button>
@@ -175,4 +163,10 @@ class QuizCreator extends Component {
     }
 }
 
-export default QuizCreator;
+const mapStateToProps = state => {
+    return {
+        quiz: state.create.quiz
+    }
+};
+
+export default connect(mapStateToProps, {createQuizQuestion, finishCreateQuiz})(QuizCreator);
