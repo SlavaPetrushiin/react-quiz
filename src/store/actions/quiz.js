@@ -66,8 +66,8 @@ export function fetchQuizSuccess(quiz){
 //Обработка клика ответа
 export function quizAnswerClick(answerId){
     return function(dispatch, getState){
+        debugger
         let state = getState().quiz;
-
         if (state.answerState) {//двойной клик
             let key = Object.keys(state.answerState)[0];
             if (state.answerState[key] === 'success') return
@@ -76,16 +76,15 @@ export function quizAnswerClick(answerId){
         let currentQuestion = state.quiz[state.activeQuestion]; //текущий вопрос
         const results = state.results;
 
-        if (currentQuestion.rightAnswerId === Number(answerId)) {
+        if (currentQuestion.rightAnswerId === answerId) {
 
-            if (!state.results[answerId]) {
+            if (!results[currentQuestion.id]) {
                 results[currentQuestion.id] = 'success';
             }
 
-            dispatch(quizSetState({[answerId]: 'success'}, results), results);
+            dispatch(quizSetState({[answerId]: 'success'}, results));
 
             const timeout = window.setTimeout(() => { //проверка для переключения вопроса
-               debugger
                 if (isQuizFinish(state)) {
                     dispatch(quizIsFinished());
                 } else {
@@ -95,7 +94,7 @@ export function quizAnswerClick(answerId){
             }, 1000);
         } else {
             results[currentQuestion.id] = 'error'; //пишем в массив ответы
-            dispatch(quizSetState({[answerId]: 'error'}, results), results);
+            dispatch(quizSetState({[answerId]: 'error'}, results));
         }
     }
 }
@@ -109,19 +108,17 @@ export function quizSetState(answerState, results){
 }
 //Завершение теста
 export function quizIsFinished(){
-    return { type: QUIZ_IS_FINISHED}
+    return {type: QUIZ_IS_FINISHED}
 }
 
 export function quizNextQuestion(number) {
     return {type: QUIZ_NEXT_QUESTION, number}
 }
-//Логига работы
+//Завершение теста
 function isQuizFinish (state){
     return state.activeQuestion + 1 === state.quiz.length;
 }
 
 export function retryQuiz(){
-    return {
-        type: QUIZ_RETRY
-    }
+    return {type: QUIZ_RETRY}
 }

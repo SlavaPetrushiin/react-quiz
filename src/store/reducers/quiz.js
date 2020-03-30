@@ -41,8 +41,8 @@ export const quizReducer = (state = initialState, action) => {
         case QUIZ_SET_STATE:
             return {
                 ...state,
-                results: action.results,
-                answerState: action.answerState
+                answerState: action.answerState,
+                results: action.results
             };
         case QUIZ_IS_FINISHED:
             return {
