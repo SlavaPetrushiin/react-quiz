@@ -3,12 +3,13 @@ import Button from '../ui/Button/Button';
 import classes from './Auth.module.css'
 import Input from '../ui/Input/Input';
 import is from 'is_js';
-import axios from 'axios';
+import {connect} from "react-redux";
+import {fetchAuth} from "../../store/actions/auth";
 
 class Auth extends Component {
     state = {
         isFormValid: false,
-        formControls:{
+        formControls: {
             email: {
                 value: '',
                 type: 'email',
@@ -17,7 +18,7 @@ class Auth extends Component {
                 errorMessage: 'Введите корректный email',
                 valid: false,
                 touched: false,
-                validation:{ //Правила для валидации
+                validation: { //Правила для валидации
                     required: true,
                     email: true
                 }
@@ -30,7 +31,7 @@ class Auth extends Component {
                 errorMessage: 'Введите корректный пароль',
                 valid: false,
                 touched: false,
-                validation:{
+                validation: {
                     required: true,
                     minLength: 6
                 }
@@ -38,62 +39,42 @@ class Auth extends Component {
         }
     };
 
-    loginHandler = async () => {
-        const authData = {
-            email: this.state.formControls.email.value,
-            password: this.state.formControls.password.value,
-            returnSecureToken: true
-        };
-        try{
-            const response = await axios.post(
-                'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDg1jCeefcPioaiXSoGbozj2A1i4f9vAsc',
-                authData
-            );
-
-            console.log(response.data);
-        }catch(e){
-            console.error(e);
-        }
+    loginHandler = () => {
+        this.props.fetchAuth(
+            this.state.formControls.email.value,
+            this.state.formControls.password.value,
+            false
+        );
     };
 
-    registerHandler = async () => {
-        const authData = {
-            email: this.state.formControls.email.value,
-            password: this.state.formControls.password.value,
-            returnSecureToken: true
-        };
-        try{
-            const response = await axios.post(
-                'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDg1jCeefcPioaiXSoGbozj2A1i4f9vAsc',
-                authData
-            );
-
-            console.log(response.data);
-        }catch(e){
-            console.error(e);
-        }
+    registerHandler = () => {
+        this.props.fetchAuth(
+            this.state.formControls.email.value,
+            this.state.formControls.password.value,
+            true
+        );
     };
 
     submitForm = (e) => {
         e.preventDefault();
     };
 
-    validateControl(value, validation){
-        if(!validation){ //Валидация не нужна
-           return true;
+    validateControl(value, validation) {
+        if (!validation) { //Валидация не нужна
+            return true;
         }
 
         let isValid = true;
 
-        if(validation.required){
+        if (validation.required) {
             isValid = value.trim() !== '' && isValid;
         }
 
-        if(validation.email){
+        if (validation.email) {
             isValid = is.email(value) && isValid;
         }
 
-        if(validation.minLength){
+        if (validation.minLength) {
             isValid = value.length >= 6 && isValid;
         }
 
@@ -165,4 +146,4 @@ class Auth extends Component {
     }
 }
 
-export default Auth;
+export default connect(null, {fetchAuth})(Auth);

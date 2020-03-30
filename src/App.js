@@ -5,18 +5,50 @@ import {Route, Switch} from "react-router-dom";
 import Auth from "./components/Auth/Auth";
 import QuizCreator from "./components/QuizCreator/QuizCreator";
 import QuizList from "./components/QuizList/QuizList";
+import {connect} from "react-redux";
 
-function App() {
+function App(props) {
+    // let routes = [
+    //     <Route path={'/quiz/:id'} render={() => <Quiz/>}/>,
+    //     <Route path={'/'} render={() => <QuizList/>}/>
+    // ];
+    //
+    // if(props.auth){
+    //     routes.push(<Route path={'/quiz-creator'} render={()=> <QuizCreator/>}/>)
+    // }
+    // else{
+    //     routes.push(<Route path={'/auth'} render={() => <Auth/>}/>)
+    // }
+
     return (
         <Layout>
             <Switch>
-                <Route path={'/auth'} render={()=> <Auth/>}/>
-                <Route path={'/quiz-creator'} render={()=> <QuizCreator/>}/>
-                <Route path={'/quiz/:id'} render={()=> <Quiz/>}/>
-                <Route path={'/'} render={()=> <QuizList/>}/>
+                {
+                    props.auth
+                        ? <>
+                            <Route path={'/quiz/:id'} render={() => <Quiz/>}/>
+                            <Route path={'/'} render={() => <QuizList/>}/>
+                            <Route path={'/quiz-creator'} render={()=> <QuizCreator/>}/>
+                        </>
+                        : <>
+                            <Route path={'/quiz/:id'} render={() => <Quiz/>}/>
+                            <Route path={'/'} render={() => <QuizList/>}/>
+                            <Route path={'/auth'} render={() => <Auth/>}/>
+                        </>
+                }
+                {/*<Route path={'/auth'} render={()=> <Auth/>}/>*/}
+                {/*<Route path={'/quiz-creator'} render={()=> <QuizCreator/>}/>*/}
+                {/*<Route path={'/quiz/:id'} render={()=> <Quiz/>}/>*/}
+                {/*<Route path={'/'} render={()=> <QuizList/>}/>*/}
             </Switch>
         </Layout>
     );
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+      auth: state.auth.token
+  }
+};
+
+export default connect(mapStateToProps, null)(App);
