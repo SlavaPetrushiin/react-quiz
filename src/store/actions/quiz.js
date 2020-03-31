@@ -66,7 +66,6 @@ export function fetchQuizSuccess(quiz){
 //Обработка клика ответа
 export function quizAnswerClick(answerId){
     return function(dispatch, getState){
-        debugger
         let state = getState().quiz;
         if (state.answerState) {//двойной клик
             let key = Object.keys(state.answerState)[0];

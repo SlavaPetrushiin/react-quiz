@@ -46,7 +46,7 @@ export function autoLogout(time){
     return function (dispatch) {
         setTimeout(() => {
             dispatch(logout())
-        }, time)
+        }, time * 1000)
     }
 }
 
@@ -64,5 +64,23 @@ export function authSuccess(token){
     return {
         type: AUTH_SUCCESS,
         token
+    }
+}
+
+export function autoLogin() {
+    return dispatch => {
+        const token = localStorage.getItem('token');
+        if (!token){
+            dispatch(logout()) //выйти из системы при отсутствии данных в локолстор
+        } else {
+            const expirationData = new Date (localStorage.getItem('expirationData'));
+            console.log('expirationData ', expirationData)
+            if(expirationData <= new Date()){
+                dispatch(logout())
+            } else {
+                dispatch(authSuccess(token));
+                dispatch(autoLogout(expirationData.getTime() - (new Date().getTime()) / 1000));
+            }
+        }
     }
 }
